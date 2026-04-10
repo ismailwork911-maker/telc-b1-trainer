@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getExam } from '../data/exams';
 import { calculateScore } from '../data/scoring';
-import type { ExamAnswers, ExamRecord, ScoringResult } from '../types';
+import type { ExamData, ExamAnswers, ExamRecord, ScoringResult } from '../types';
 import StickyHeader from './StickyHeader';
 import StickyFooter from './StickyFooter';
 import ResultView from './ResultView';
@@ -105,27 +105,27 @@ export default function ListeningModule() {
       schreiben: { text: schreibenText, rubric: schreibenRubric },
       sprechen: { rubric: sprechenRubric },
     };
-    const scoring = calculateScore(exam, answers);
+    const scoring = calculateScore(exam!, answers);
     setResult(scoring);
     setPhase('result');
 
     // Save to localStorage
     const record: ExamRecord = {
-      examId: exam.id,
+      examId: exam!.id,
       points: scoring.totalScore,
       status: scoring.overallPassed ? 'Bestanden' : 'Nicht bestanden',
       date: new Date().toISOString(),
     };
     const stored = localStorage.getItem('telc-b1-records');
     const records = stored ? JSON.parse(stored) : {};
-    records[exam.id] = record;
+    records[exam!.id] = record;
     localStorage.setItem('telc-b1-records', JSON.stringify(records));
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   if (phase === 'result' && result) {
-    return <ResultView result={result} examTitle={exam.title} onBack={() => navigate('/')} />;
+    return <ResultView result={result} examTitle={exam!.title} onBack={() => navigate('/')} />;
   }
 
   return (
@@ -160,17 +160,17 @@ export default function ListeningModule() {
       {/* Content */}
       <div className="a4-page px-4">
         {phase === 'hoeren' && (
-          <HoerenSection exam={exam} answers={hoerenAnswers} setAnswers={setHoerenAnswers} />
+          <HoerenSection exam={exam!} answers={hoerenAnswers} setAnswers={setHoerenAnswers} />
         )}
         {phase === 'lesen' && (
-          <LesenSection exam={exam} answers={lesenAnswers} setAnswers={setLesenAnswers} />
+          <LesenSection exam={exam!} answers={lesenAnswers} setAnswers={setLesenAnswers} />
         )}
         {phase === 'sprachbausteine' && (
-          <SprachbausteineSection exam={exam} answers={sbAnswers} setAnswers={setSbAnswers} />
+          <SprachbausteineSection exam={exam!} answers={sbAnswers} setAnswers={setSbAnswers} />
         )}
         {phase === 'schreiben' && (
           <SchreibenSection
-            exam={exam}
+            exam={exam!}
             text={schreibenText}
             setText={setSchreibenText}
             rubric={schreibenRubric}
@@ -179,7 +179,7 @@ export default function ListeningModule() {
         )}
         {phase === 'sprechen' && (
           <SprechenSection
-            exam={exam}
+            exam={exam!}
             rubric={sprechenRubric}
             setRubric={setSprechenRubric}
           />
@@ -229,7 +229,7 @@ export default function ListeningModule() {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 function HoerenSection({ exam, answers, setAnswers }: {
-  exam: ReturnType<typeof getExam> & {};
+  exam: ExamData;
   answers: Record<number, number | boolean>;
   setAnswers: React.Dispatch<React.SetStateAction<Record<number, number | boolean>>>;
 }) {
@@ -322,7 +322,7 @@ function HoerenSection({ exam, answers, setAnswers }: {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 function LesenSection({ exam, answers, setAnswers }: {
-  exam: ReturnType<typeof getExam> & {};
+  exam: ExamData;
   answers: Record<number, number | string>;
   setAnswers: React.Dispatch<React.SetStateAction<Record<number, number | string>>>;
 }) {
@@ -451,7 +451,7 @@ function LesenSection({ exam, answers, setAnswers }: {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 function SprachbausteineSection({ exam, answers, setAnswers }: {
-  exam: ReturnType<typeof getExam> & {};
+  exam: ExamData;
   answers: Record<number, number>;
   setAnswers: React.Dispatch<React.SetStateAction<Record<number, number>>>;
 }) {
@@ -519,7 +519,7 @@ function SprachbausteineSection({ exam, answers, setAnswers }: {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 function SchreibenSection({ exam, text, setText, rubric, setRubric }: {
-  exam: ReturnType<typeof getExam> & {};
+  exam: ExamData;
   text: string;
   setText: (t: string) => void;
   rubric: { aufgabenerfuellung: number; kohaerenz: number; wortschatz: number; grammatik: number };
@@ -618,7 +618,7 @@ function SchreibenSection({ exam, text, setText, rubric, setRubric }: {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 function SprechenSection({ exam, rubric, setRubric }: {
-  exam: ReturnType<typeof getExam> & {};
+  exam: ExamData;
   rubric: { teil1: number; teil2: number; teil3: number };
   setRubric: React.Dispatch<React.SetStateAction<typeof rubric>>;
 }) {
