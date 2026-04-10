@@ -1,0 +1,208 @@
+import type { ScoringResult } from '../types';
+
+interface Props {
+  result: ScoringResult;
+  examTitle: string;
+  onBack: () => void;
+}
+
+export default function ResultView({ result, examTitle, onBack }: Props) {
+  const gradeColors: Record<string, string> = {
+    'Sehr Gut': 'text-emerald-700 bg-emerald-50 border-emerald-200',
+    'Gut': 'text-emerald-600 bg-emerald-50 border-emerald-200',
+    'Befriedigend': 'text-amber-600 bg-amber-50 border-amber-200',
+    'Ausreichend': 'text-amber-700 bg-amber-50 border-amber-200',
+    'Nicht bestanden': 'text-red-600 bg-red-50 border-red-200',
+  };
+
+  return (
+    <div className="min-h-screen bg-stone-50 py-8">
+      <div className="a4-page px-4">
+        {/* Grade Header */}
+        <div className="text-center mb-8">
+          <p className="text-xs uppercase tracking-widest text-stone-400 mb-2">Ergebnis</p>
+          <h1 className="font-serif text-3xl font-bold text-stone-900 mb-1">{examTitle}</h1>
+          <div className={`inline-block mt-4 px-6 py-3 rounded-xl border-2 ${gradeColors[result.grade] || ''}`}>
+            <p className="text-sm font-medium opacity-70 mb-1">
+              {result.totalScore} / {result.totalMax} Punkte
+            </p>
+            <p className="text-3xl font-bold font-serif">{result.grade}</p>
+          </div>
+        </div>
+
+        {/* Pass/Fail Indicators */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <StatusCard
+            title="Schriftliche Prüfung"
+            score={result.writtenTotal}
+            max={result.writtenMax}
+            threshold={135}
+            passed={result.writtenPassed}
+          />
+          <StatusCard
+            title="Mündliche Prüfung"
+            score={result.oralTotal}
+            max={result.oralMax}
+            threshold={45}
+            passed={result.oralPassed}
+          />
+        </div>
+
+        {/* Wiederholung warning */}
+        {result.wiederholung.length > 0 && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+            <p className="text-sm font-semibold text-red-700 mb-1">⚠ Wiederholung erforderlich</p>
+            <ul className="space-y-1">
+              {result.wiederholung.map(w => (
+                <li key={w} className="text-sm text-red-600">• {w}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Detailed Breakdown */}
+        <div className="bg-white rounded-xl border border-stone-200 overflow-hidden mb-8">
+          <div className="px-5 py-3 bg-stone-50 border-b border-stone-200">
+            <h3 className="text-sm font-semibold text-stone-700">Detaillierte Auswertung</h3>
+          </div>
+          <div className="divide-y divide-stone-100">
+            <ScoreRow
+              label="Hören"
+              raw={result.hoeren.raw}
+              maxRaw={result.hoeren.maxRaw}
+              scaled={result.hoeren.scaled}
+              maxScaled={result.hoeren.maxScaled}
+            />
+            <ScoreRow
+              label="Lesen"
+              raw={result.lesen.raw}
+              maxRaw={result.lesen.maxRaw}
+              scaled={result.lesen.scaled}
+              maxScaled={result.lesen.maxScaled}
+            />
+            <ScoreRow
+              label="Sprachbausteine"
+              raw={result.sprachbausteine.raw}
+              maxRaw={result.sprachbausteine.maxRaw}
+              scaled={result.sprachbausteine.scaled}
+              maxScaled={result.sprachbausteine.maxScaled}
+            />
+            <div className="px-5 py-3 flex items-center justify-between">
+              <span className="text-sm text-stone-700">Schreiben</span>
+              <div className="text-right">
+                <span className="text-sm font-mono font-semibold text-stone-800">
+                  {result.schreiben.score} / {result.schreiben.max}
+                </span>
+              </div>
+            </div>
+            <div className="px-5 py-3 flex items-center justify-between bg-stone-50">
+              <span className="text-sm font-semibold text-stone-800">Schriftlich gesamt</span>
+              <span className={`text-sm font-mono font-bold ${
+                result.writtenPassed ? 'text-emerald-600' : 'text-red-600'
+              }`}>
+                {result.writtenTotal} / {result.writtenMax}
+              </span>
+            </div>
+            <div className="px-5 py-3 flex items-center justify-between">
+              <span className="text-sm text-stone-700">Sprechen</span>
+              <span className="text-sm font-mono font-semibold text-stone-800">
+                {result.sprechen.score} / {result.sprechen.max}
+              </span>
+            </div>
+            <div className="px-5 py-3 flex items-center justify-between bg-emerald-50">
+              <span className="text-sm font-bold text-stone-900">Gesamtergebnis</span>
+              <span className={`text-lg font-mono font-bold ${
+                result.overallPassed ? 'text-emerald-700' : 'text-red-600'
+              }`}>
+                {result.totalScore} / {result.totalMax}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Grade Scale */}
+        <div className="bg-white rounded-xl border border-stone-200 p-5 mb-8">
+          <h3 className="text-sm font-semibold text-stone-700 mb-3">Notenskala</h3>
+          <div className="space-y-1.5">
+            {[
+              { range: '270–300', grade: 'Sehr Gut', color: 'bg-emerald-500' },
+              { range: '240–269', grade: 'Gut', color: 'bg-emerald-400' },
+              { range: '210–239', grade: 'Befriedigend', color: 'bg-amber-400' },
+              { range: '180–209', grade: 'Ausreichend', color: 'bg-amber-500' },
+              { range: '< 180', grade: 'Nicht bestanden', color: 'bg-red-400' },
+            ].map(item => (
+              <div
+                key={item.grade}
+                className={`flex items-center justify-between px-3 py-2 rounded-md text-sm ${
+                  item.grade === result.grade ? 'ring-2 ring-emerald-500 bg-stone-50 font-semibold' : 'text-stone-500'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${item.color}`} />
+                  <span>{item.grade}</span>
+                </div>
+                <span className="font-mono text-xs">{item.range}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Back button */}
+        <div className="text-center pb-8">
+          <button
+            onClick={onBack}
+            className="px-6 py-3 bg-stone-800 text-white font-medium rounded-lg hover:bg-stone-900 transition-colors"
+          >
+            Zurück zur Übersicht
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatusCard({ title, score, max, threshold, passed }: {
+  title: string; score: number; max: number; threshold: number; passed: boolean;
+}) {
+  const pct = max > 0 ? Math.round((score / max) * 100) : 0;
+  return (
+    <div className={`rounded-xl border-2 p-4 ${
+      passed ? 'border-emerald-200 bg-emerald-50' : 'border-red-200 bg-red-50'
+    }`}>
+      <p className="text-xs text-stone-500 mb-1">{title}</p>
+      <p className={`text-2xl font-bold font-mono ${passed ? 'text-emerald-700' : 'text-red-600'}`}>
+        {score} / {max}
+      </p>
+      <div className="mt-2 h-1.5 bg-white/60 rounded-full overflow-hidden">
+        <div
+          className={`h-full rounded-full ${passed ? 'bg-emerald-500' : 'bg-red-400'}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <p className="text-[10px] mt-1 text-stone-400">
+        {pct}% — Mindestens {threshold} ({Math.round((threshold / max) * 100)}%) zum Bestehen
+      </p>
+      <p className={`text-xs font-semibold mt-1 ${passed ? 'text-emerald-600' : 'text-red-500'}`}>
+        {passed ? '✓ Bestanden' : '✗ Nicht bestanden'}
+      </p>
+    </div>
+  );
+}
+
+function ScoreRow({ label, raw, maxRaw, scaled, maxScaled }: {
+  label: string; raw: number; maxRaw: number; scaled: number; maxScaled: number;
+}) {
+  return (
+    <div className="px-5 py-3 flex items-center justify-between">
+      <span className="text-sm text-stone-700">{label}</span>
+      <div className="text-right">
+        <span className="text-sm font-mono font-semibold text-stone-800">
+          {scaled} / {maxScaled}
+        </span>
+        <span className="text-[10px] text-stone-400 ml-2">
+          (Roh: {raw}/{maxRaw})
+        </span>
+      </div>
+    </div>
+  );
+}
