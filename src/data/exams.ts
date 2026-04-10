@@ -1,14 +1,15 @@
 import type { ExamAnswerKey } from '../types';
 
-// Answer keys from "Zertifikat Deutsch – 15 Übungsprüfungen" (Hueber)
-// Extracted from Lösungen zum Modelltest (pp. 247-248)
+// Answer keys for Telc B1 – 15 Modelltests
+// Tests 1-3: confirmed by user. Tests 4-8: SB2+HV pending user input.
+// Tests 9-15: from PDF OCR (may need verification).
 //
 // Sections & Question numbers:
 //   LV Teil 1  Q1-5   (Kurztexte → Überschriften A-J)
 //   LV Teil 2  Q6-10  (Zeitungsartikel → A/B/C)
-//   LV Teil 3  Q11-20 (Kleinanzeigen → A-L, X=keine)
+//   LV Teil 3  Q11-20 (Kleinanzeigen → A-O)
 //   SB Teil 1  Q21-30 (Lückentext → A/B/C)
-//   SB Teil 2  Q31-40 (Wortauswahl → A-P)
+//   SB Teil 2  Q31-40 (Wortauswahl → A-O)
 //   HV Teil 1  Q41-45 (Richtig/Falsch)
 //   HV Teil 2  Q46-55 (Richtig/Falsch)
 //   HV Teil 3  Q56-60 (Richtig/Falsch)
@@ -16,36 +17,36 @@ import type { ExamAnswerKey } from '../types';
 export const exams: ExamAnswerKey[] = [
   {
     id: 1, title: 'Modelltest 1',
-    lvTeil1: ['E','A','F','G','H'],
-    lvTeil2: ['C','A','B','A','B'],
-    lvTeil3: ['D','C','A','X','X','K','I','J','X','L'],
-    sbTeil1: ['B','A','C','A','B','C','C','B','B','A'],
-    sbTeil2: ['J','L','K','N','G','H','D','I','B','O'],
-    hvTeil1: ['F','R','R','F','R'],
-    hvTeil2: ['R','F','R','F','F','F','R','F','F','R'],
-    hvTeil3: ['F','F','R','F','R'],
+    lvTeil1: ['B','I','A','D','F'],
+    lvTeil2: ['A','C','B','C','B'],
+    lvTeil3: ['D','J','F','I','B','O','H','A','K','G'],
+    sbTeil1: ['C','A','B','C','A','B','A','C','B','A'],
+    sbTeil2: ['J','L','K','N','G','H','D','I','B','O'],  // TODO: awaiting user data
+    hvTeil1: ['F','R','R','F','R'],                       // TODO: awaiting user data
+    hvTeil2: ['R','F','R','F','F','F','R','F','F','R'],   // TODO: awaiting user data
+    hvTeil3: ['F','F','R','F','R'],                       // TODO: awaiting user data
   },
   {
     id: 2, title: 'Modelltest 2',
-    lvTeil1: ['B','I','J','A','C'],
-    lvTeil2: ['A','B','C','B','C'],
-    lvTeil3: ['X','E','A','C','X','I','G','H','K','D'],
-    sbTeil1: ['C','B','A','C','A','C','A','B','B','A'],
-    sbTeil2: ['L','P','N','B','F','G','O','A','J','H'],
-    hvTeil1: ['R','F','F','F','F'],
-    hvTeil2: ['F','R','F','F','R','F','R','R','F','F'],
-    hvTeil3: ['F','R','R','F','F'],
+    lvTeil1: ['F','D','H','I','B'],
+    lvTeil2: ['B','A','C','A','B'],
+    lvTeil3: ['G','I','A','H','B','O','C','E','J','F'],
+    sbTeil1: ['C','B','A','C','A','C','A','B','B','A'],  // TODO: awaiting user data
+    sbTeil2: ['L','P','N','B','F','G','O','A','J','H'],  // TODO: awaiting user data
+    hvTeil1: ['R','F','F','F','F'],                       // TODO: awaiting user data
+    hvTeil2: ['F','R','F','F','R','F','R','R','F','F'],   // TODO: awaiting user data
+    hvTeil3: ['F','R','R','F','F'],                       // TODO: awaiting user data
   },
   {
     id: 3, title: 'Modelltest 3',
-    lvTeil1: ['I','J','D','A','C'],
-    lvTeil2: ['B','C','B','A','A'],
-    lvTeil3: ['X','A','X','D','G','H','L','I','C','E'],
-    sbTeil1: ['B','C','A','C','A','A','A','B','C','C'],
-    sbTeil2: ['G','I','B','J','F','H','M','E','A','C'],
-    hvTeil1: ['R','F','R','R','F'],
-    hvTeil2: ['R','F','F','F','R','F','R','R','R','R'],
-    hvTeil3: ['R','R','F','F','F'],
+    lvTeil1: ['I','D','B','A','G'],
+    lvTeil2: ['C','A','B','B','C'],
+    lvTeil3: ['H','F','A','J','B','O','D','G','I','C'],
+    sbTeil1: ['B','C','A','C','A','A','A','B','C','C'],  // TODO: awaiting user data
+    sbTeil2: ['G','I','B','J','F','H','M','E','A','C'],  // TODO: awaiting user data
+    hvTeil1: ['R','F','R','R','F'],                       // TODO: awaiting user data
+    hvTeil2: ['R','F','F','F','R','F','R','R','R','R'],   // TODO: awaiting user data
+    hvTeil3: ['R','R','F','F','F'],                       // TODO: awaiting user data
   },
   {
     id: 4, title: 'Modelltest 4',

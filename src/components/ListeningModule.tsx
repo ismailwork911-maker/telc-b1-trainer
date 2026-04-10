@@ -24,8 +24,8 @@ const PHASE_LABELS: Record<string, string> = {
 };
 
 const LV1_LETTERS = ['A','B','C','D','E','F','G','H','I','J'];
-const LV3_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','X'];
-const SB2_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P'];
+const LV3_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
+const SB2_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
 
 export default function ListeningModule() {
   const { examId } = useParams<{ examId: string }>();
@@ -182,7 +182,7 @@ export default function ListeningModule() {
               ))}
             </AnswerSheetSection>
 
-            <AnswerSheetSection title="Leseverstehen — Teil 3" subtitle="Kleinanzeigen A – L / X = keine" qRange={[11, 20]}>
+            <AnswerSheetSection title="Leseverstehen — Teil 3" subtitle="Kleinanzeigen a – o" qRange={[11, 20]}>
               {Array.from({ length: 10 }, (_, i) => i + 11).map(q => (
                 <LetterRow key={q} num={q} letters={LV3_LETTERS} selected={answers[q]}
                   onSelect={v => setAnswer(q, v)} />
@@ -201,7 +201,7 @@ export default function ListeningModule() {
               ))}
             </AnswerSheetSection>
 
-            <AnswerSheetSection title="Sprachbausteine — Teil 2" subtitle="Wortauswahl A – P" qRange={[31, 40]}>
+            <AnswerSheetSection title="Sprachbausteine — Teil 2" subtitle="Wortauswahl a – o" qRange={[31, 40]}>
               {Array.from({ length: 10 }, (_, i) => i + 31).map(q => (
                 <LetterRow key={q} num={q} letters={SB2_LETTERS} selected={answers[q]}
                   onSelect={v => setAnswer(q, v)} />
