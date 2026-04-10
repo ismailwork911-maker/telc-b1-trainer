@@ -30,8 +30,8 @@ export default function ResultView({ result, examTitle, onBack }: Props) {
           </div>
         </div>
 
-        {/* Pass/Fail Indicators */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        {/* Written exam status */}
+        <div className="mb-8">
           <StatusCard
             title="Schriftliche Prüfung"
             score={result.writtenTotal}
@@ -39,19 +39,12 @@ export default function ResultView({ result, examTitle, onBack }: Props) {
             threshold={135}
             passed={result.writtenPassed}
           />
-          <StatusCard
-            title="Mündliche Prüfung"
-            score={result.oralTotal}
-            max={result.oralMax}
-            threshold={45}
-            passed={result.oralPassed}
-          />
         </div>
 
         {/* Wiederholung warning */}
         {result.wiederholung.length > 0 && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
-            <p className="text-sm font-semibold text-red-700 mb-1">⚠ Wiederholung erforderlich</p>
+            <p className="text-sm font-semibold text-red-700 mb-1">Wiederholung erforderlich</p>
             <ul className="space-y-1">
               {result.wiederholung.map(w => (
                 <li key={w} className="text-sm text-red-600">• {w}</li>
@@ -67,47 +60,33 @@ export default function ResultView({ result, examTitle, onBack }: Props) {
           </div>
           <div className="divide-y divide-stone-100">
             <ScoreRow
-              label="Hören"
-              raw={result.hoeren.raw}
-              maxRaw={result.hoeren.maxRaw}
-              scaled={result.hoeren.scaled}
-              maxScaled={result.hoeren.maxScaled}
-            />
-            <ScoreRow
-              label="Lesen"
-              raw={result.lesen.raw}
-              maxRaw={result.lesen.maxRaw}
-              scaled={result.lesen.scaled}
-              maxScaled={result.lesen.maxScaled}
+              label="Leseverstehen"
+              raw={result.lv.raw}
+              maxRaw={result.lv.maxRaw}
+              scaled={result.lv.scaled}
+              maxScaled={result.lv.maxScaled}
             />
             <ScoreRow
               label="Sprachbausteine"
-              raw={result.sprachbausteine.raw}
-              maxRaw={result.sprachbausteine.maxRaw}
-              scaled={result.sprachbausteine.scaled}
-              maxScaled={result.sprachbausteine.maxScaled}
+              raw={result.sb.raw}
+              maxRaw={result.sb.maxRaw}
+              scaled={result.sb.scaled}
+              maxScaled={result.sb.maxScaled}
+            />
+            <ScoreRow
+              label="Hörverstehen"
+              raw={result.hv.raw}
+              maxRaw={result.hv.maxRaw}
+              scaled={result.hv.scaled}
+              maxScaled={result.hv.maxScaled}
             />
             <div className="px-5 py-3 flex items-center justify-between">
-              <span className="text-sm text-stone-700">Schreiben</span>
+              <span className="text-sm text-stone-700">Schriftlicher Ausdruck</span>
               <div className="text-right">
                 <span className="text-sm font-mono font-semibold text-stone-800">
                   {result.schreiben.score} / {result.schreiben.max}
                 </span>
               </div>
-            </div>
-            <div className="px-5 py-3 flex items-center justify-between bg-stone-50">
-              <span className="text-sm font-semibold text-stone-800">Schriftlich gesamt</span>
-              <span className={`text-sm font-mono font-bold ${
-                result.writtenPassed ? 'text-emerald-600' : 'text-red-600'
-              }`}>
-                {result.writtenTotal} / {result.writtenMax}
-              </span>
-            </div>
-            <div className="px-5 py-3 flex items-center justify-between">
-              <span className="text-sm text-stone-700">Sprechen</span>
-              <span className="text-sm font-mono font-semibold text-stone-800">
-                {result.sprechen.score} / {result.sprechen.max}
-              </span>
             </div>
             <div className="px-5 py-3 flex items-center justify-between bg-emerald-50">
               <span className="text-sm font-bold text-stone-900">Gesamtergebnis</span>
@@ -122,14 +101,14 @@ export default function ResultView({ result, examTitle, onBack }: Props) {
 
         {/* Grade Scale */}
         <div className="bg-white rounded-xl border border-stone-200 p-5 mb-8">
-          <h3 className="text-sm font-semibold text-stone-700 mb-3">Notenskala</h3>
+          <h3 className="text-sm font-semibold text-stone-700 mb-3">Notenskala (schriftlich / 225)</h3>
           <div className="space-y-1.5">
             {[
-              { range: '270–300', grade: 'Sehr Gut', color: 'bg-emerald-500' },
-              { range: '240–269', grade: 'Gut', color: 'bg-emerald-400' },
-              { range: '210–239', grade: 'Befriedigend', color: 'bg-amber-400' },
-              { range: '180–209', grade: 'Ausreichend', color: 'bg-amber-500' },
-              { range: '< 180', grade: 'Nicht bestanden', color: 'bg-red-400' },
+              { range: '≥ 203 (90%)', grade: 'Sehr Gut', color: 'bg-emerald-500' },
+              { range: '≥ 180 (80%)', grade: 'Gut', color: 'bg-emerald-400' },
+              { range: '≥ 158 (70%)', grade: 'Befriedigend', color: 'bg-amber-400' },
+              { range: '≥ 135 (60%)', grade: 'Ausreichend', color: 'bg-amber-500' },
+              { range: '< 135', grade: 'Nicht bestanden', color: 'bg-red-400' },
             ].map(item => (
               <div
                 key={item.grade}
@@ -146,6 +125,10 @@ export default function ResultView({ result, examTitle, onBack }: Props) {
             ))}
           </div>
         </div>
+
+        <p className="text-center text-xs text-stone-400 mb-6">
+          Ohne mündliche Prüfung (75 Pkt). Bewertung basiert auf dem schriftlichen Teil (225 Pkt).
+        </p>
 
         {/* Back button */}
         <div className="text-center pb-8">
@@ -200,7 +183,7 @@ function ScoreRow({ label, raw, maxRaw, scaled, maxScaled }: {
           {scaled} / {maxScaled}
         </span>
         <span className="text-[10px] text-stone-400 ml-2">
-          (Roh: {raw}/{maxRaw})
+          ({raw}/{maxRaw} richtig)
         </span>
       </div>
     </div>

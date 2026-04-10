@@ -1,113 +1,81 @@
-import type { ExamAnswerKey, ExamAnswers, ScoringResult } from '../types';
+import type { ExamAnswerKey, ExamAnswers, ScoringResult, SectionScore } from '../types';
+import { getCorrectAnswer } from './exams';
 
-/**
- * Telc B1 Scoring Engine
- *
- * Written Section (225 pts):
- *   - Hören:            25 Q × 5 raw = 125 raw → scaled to 75 pts
- *   - Lesen:            20 Q × 5 raw = 100 raw → scaled to 75 pts
- *   - Sprachbausteine:  20 Q × 5 raw = 100 raw → scaled to 30 pts
- *   - Schreiben:        rubric-graded, 45 pts max
- *   Written pass: ≥ 135 pts (60%)
- *
- * Oral Section (75 pts):
- *   - Sprechen: rubric-graded, 75 pts max
- *   Oral pass: ≥ 45 pts (60%)
- *
- * Total: 300 pts
- */
+// Points per section (from Übersicht zur Prüfung Zertifikat Deutsch):
+//   LV Teil 1: 5 items × 5 pts = 25
+//   LV Teil 2: 5 items × 5 pts = 25
+//   LV Teil 3: 10 items × 2.5 pts = 25
+//   SB Teil 1: 10 items × 1.5 pts = 15
+//   SB Teil 2: 10 items × 1.5 pts = 15
+//   HV Teil 1: 5 items × 5 pts = 25
+//   HV Teil 2: 10 items × 2.5 pts = 25
+//   HV Teil 3: 5 items × 5 pts = 25
+//   Schreiben: 45 pts (self-assessed rubric)
+//   Written total: 225 pts — pass: 135 (60%)
 
-export function calculateScore(key: ExamAnswerKey, answers: ExamAnswers): ScoringResult {
-  // ── Hören (125 raw → 75 scaled) ──
-  let hoerenRaw = 0;
-  const hoerenMaxRaw = 125;
-  // Teil 1: Q1-5 R/F
-  key.hoerenTeil1.forEach((correct, i) => {
-    if (answers.hoeren[i + 1] === correct) hoerenRaw += 5;
-  });
-  // Teil 2: Q6-15
-  key.hoerenTeil2.forEach((correct, i) => {
-    if (answers.hoeren[i + 6] === correct) hoerenRaw += 5;
-  });
-  // Teil 3: Q16-25
-  key.hoerenTeil3.forEach((correct, i) => {
-    if (answers.hoeren[i + 16] === correct) hoerenRaw += 5;
-  });
-  const hoerenScaled = Math.round((hoerenRaw / hoerenMaxRaw) * 75);
+function countCorrect(exam: ExamAnswerKey, answers: Record<number, string>, start: number, end: number): number {
+  let correct = 0;
+  for (let q = start; q <= end; q++) {
+    if (answers[q] && answers[q] === getCorrectAnswer(exam, q)) correct++;
+  }
+  return correct;
+}
 
-  // ── Lesen (100 raw → 75 scaled) ──
-  let lesenRaw = 0;
-  const lesenMaxRaw = 100;
-  // Teil 1: Q26-30 letter match
-  key.lesenTeil1.forEach((correct, i) => {
-    if (answers.lesen[i + 26] === correct) lesenRaw += 5;
-  });
-  // Teil 2: Q31-35 letter match
-  key.lesenTeil2.forEach((correct, i) => {
-    if (answers.lesen[i + 31] === correct) lesenRaw += 5;
-  });
-  // Teil 3: Q36-45 MC
-  key.lesenTeil3.forEach((correct, i) => {
-    if (answers.lesen[i + 36] === correct) lesenRaw += 5;
-  });
-  const lesenScaled = Math.round((lesenRaw / lesenMaxRaw) * 75);
+export function calculateScore(exam: ExamAnswerKey, userAnswers: ExamAnswers): ScoringResult {
+  const a = userAnswers.answers;
 
-  // ── Sprachbausteine (100 raw → 30 scaled) ──
-  let sbRaw = 0;
-  const sbMaxRaw = 100;
-  key.sprachbausteineTeil1.forEach((correct, i) => {
-    if (answers.sprachbausteine[i + 46] === correct) sbRaw += 5;
-  });
-  key.sprachbausteineTeil2.forEach((correct, i) => {
-    if (answers.sprachbausteine[i + 56] === correct) sbRaw += 5;
-  });
-  const sbScaled = Math.round((sbRaw / sbMaxRaw) * 30);
+  // LV: 75 pts
+  const lvT1 = countCorrect(exam, a, 1, 5);
+  const lvT2 = countCorrect(exam, a, 6, 10);
+  const lvT3 = countCorrect(exam, a, 11, 20);
+  const lvScaled = lvT1 * 5 + lvT2 * 5 + lvT3 * 2.5;
+  const lv: SectionScore = { raw: lvT1 + lvT2 + lvT3, maxRaw: 20, scaled: lvScaled, maxScaled: 75 };
 
-  // ── Schreiben (45 pts max) ──
-  const schreibenScore = Math.min(
-    45,
-    (answers.schreiben.rubric.aufgabenerfuellung || 0) +
-    (answers.schreiben.rubric.kohaerenz || 0) +
-    (answers.schreiben.rubric.wortschatz || 0) +
-    (answers.schreiben.rubric.grammatik || 0)
-  );
+  // SB: 30 pts
+  const sbT1 = countCorrect(exam, a, 21, 30);
+  const sbT2 = countCorrect(exam, a, 31, 40);
+  const sbScaled = sbT1 * 1.5 + sbT2 * 1.5;
+  const sb: SectionScore = { raw: sbT1 + sbT2, maxRaw: 20, scaled: sbScaled, maxScaled: 30 };
 
-  // ── Written total ──
-  const writtenTotal = hoerenScaled + lesenScaled + sbScaled + schreibenScore;
+  // HV: 75 pts
+  const hvT1 = countCorrect(exam, a, 41, 45);
+  const hvT2 = countCorrect(exam, a, 46, 55);
+  const hvT3 = countCorrect(exam, a, 56, 60);
+  const hvScaled = hvT1 * 5 + hvT2 * 2.5 + hvT3 * 5;
+  const hv: SectionScore = { raw: hvT1 + hvT2 + hvT3, maxRaw: 20, scaled: hvScaled, maxScaled: 75 };
+
+  // Schreiben: 45 pts
+  const r = userAnswers.schreiben.rubric;
+  const schreibenScore = r.aufgabenerfuellung + r.kohaerenz + r.wortschatz + r.grammatik;
+  const schreiben = { score: schreibenScore, max: 45 };
+
+  // Written total
+  const writtenTotal = Math.round(lv.scaled + sb.scaled + hv.scaled + schreibenScore);
   const writtenMax = 225;
   const writtenPassed = writtenTotal >= 135;
 
-  // ── Sprechen (75 pts max) ──
-  const sprechenScore = Math.min(
-    75,
-    (answers.sprechen.rubric.teil1 || 0) +
-    (answers.sprechen.rubric.teil2 || 0) +
-    (answers.sprechen.rubric.teil3 || 0)
-  );
-  const oralPassed = sprechenScore >= 45;
-
-  const totalScore = writtenTotal + sprechenScore;
-  const overallPassed = writtenPassed && oralPassed;
-
+  // Grade (based on percentage of 225)
+  const pct = writtenTotal / writtenMax;
   let grade: string;
-  if (!overallPassed) grade = 'Nicht bestanden';
-  else if (totalScore >= 270) grade = 'Sehr Gut';
-  else if (totalScore >= 240) grade = 'Gut';
-  else if (totalScore >= 210) grade = 'Befriedigend';
-  else grade = 'Ausreichend';
+  if (pct >= 0.9) grade = 'Sehr Gut';
+  else if (pct >= 0.8) grade = 'Gut';
+  else if (pct >= 0.7) grade = 'Befriedigend';
+  else if (pct >= 0.6) grade = 'Ausreichend';
+  else grade = 'Nicht bestanden';
 
+  // Wiederholung warnings
   const wiederholung: string[] = [];
-  if (!writtenPassed) wiederholung.push('Schriftliche Prüfung');
-  if (!oralPassed) wiederholung.push('Mündliche Prüfung');
+  if (lv.scaled < 75 * 0.6) wiederholung.push('Leseverstehen unter 60%');
+  if (hv.scaled < 75 * 0.6) wiederholung.push('Hörverstehen unter 60%');
+  if (!writtenPassed) wiederholung.push('Schriftliche Prüfung nicht bestanden (< 135 Punkte)');
 
   return {
-    hoeren: { raw: hoerenRaw, maxRaw: hoerenMaxRaw, scaled: hoerenScaled, maxScaled: 75 },
-    lesen: { raw: lesenRaw, maxRaw: lesenMaxRaw, scaled: lesenScaled, maxScaled: 75 },
-    sprachbausteine: { raw: sbRaw, maxRaw: sbMaxRaw, scaled: sbScaled, maxScaled: 30 },
-    schreiben: { score: schreibenScore, max: 45 },
-    sprechen: { score: sprechenScore, max: 75 },
+    lv, sb, hv, schreiben,
     writtenTotal, writtenMax, writtenPassed,
-    oralTotal: sprechenScore, oralMax: 75, oralPassed,
-    totalScore, totalMax: 300, overallPassed, grade, wiederholung,
+    totalScore: writtenTotal,
+    totalMax: writtenMax,
+    grade,
+    overallPassed: writtenPassed,
+    wiederholung,
   };
 }
