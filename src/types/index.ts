@@ -1,82 +1,29 @@
-// ── Telc B1 Exam Types ──
+// ── Telc B1 Exam Types (Answer-Key Only) ──
 
-export interface MCQuestion {
-  id: number;
-  text: string;
-  context?: string;
-  options: string[];
-  correct: number; // index into options
-}
-
-export interface RFQuestion {
-  id: number;
-  text: string;
-  context?: string;
-  correct: boolean; // richtig = true, falsch = false
-}
-
-export interface WritingTask {
-  prompt: string;
-  type: 'informal' | 'formal';
-  bulletPoints: string[];
-}
-
-export interface SpeakingPart {
-  part: number;
-  title: string;
-  description: string;
-  prepTime: number; // seconds
-}
-
-export interface HoerenTeil1 {
-  questions: RFQuestion[]; // 5 items, Q1-5
-}
-
-export interface HoerenTeil2 {
-  questions: MCQuestion[]; // 10 items, Q6-15
-}
-
-export interface HoerenTeil3 {
-  questions: MCQuestion[]; // 10 items, Q16-25
-}
-
-export interface LesenTeil1 {
-  texts: { id: string; heading: string; content: string }[];
-  questions: { id: number; text: string; correct: string }[]; // match to text id
-}
-
-export interface LesenTeil2 {
-  situations: { id: number; text: string; correct: string }[];
-  ads: { id: string; title: string; content: string }[];
-}
-
-export interface LesenTeil3 {
-  passage: string;
-  questions: MCQuestion[]; // 10 items
-}
-
-export interface SprachbausteineTeil1 {
-  text: string; // cloze text with __{n}__ placeholders
-  questions: MCQuestion[]; // 10 items
-}
-
-export interface SprachbausteineTeil2 {
-  text: string;
-  questions: MCQuestion[]; // 10 items
-}
-
-export interface ExamData {
+/** Answer key for one exam — no question text, just correct answers */
+export interface ExamAnswerKey {
   id: number;
   title: string;
-  hoeren: { teil1: HoerenTeil1; teil2: HoerenTeil2; teil3: HoerenTeil3 };
-  lesen: { teil1: LesenTeil1; teil2: LesenTeil2; teil3: LesenTeil3 };
-  sprachbausteine: { teil1: SprachbausteineTeil1; teil2: SprachbausteineTeil2 };
-  schreiben: WritingTask;
-  sprechen: SpeakingPart[];
+  /** Q1-5 Richtig/Falsch */
+  hoerenTeil1: boolean[];
+  /** Q6-15 index 0=a, 1=b, 2=c */
+  hoerenTeil2: number[];
+  /** Q16-25 index 0=a, 1=b, 2=c */
+  hoerenTeil3: number[];
+  /** Q26-30 letter match (e.g. 'A','F','G'...) */
+  lesenTeil1: string[];
+  /** Q31-35 letter match */
+  lesenTeil2: string[];
+  /** Q36-45 index 0=a, 1=b, 2=c */
+  lesenTeil3: number[];
+  /** Q46-55 index 0=a, 1=b, 2=c */
+  sprachbausteineTeil1: number[];
+  /** Q56-65 index 0=a, 1=b, 2=c */
+  sprachbausteineTeil2: number[];
 }
 
 export interface ExamAnswers {
-  hoeren: Record<number, number | boolean>; // questionId -> selected answer
+  hoeren: Record<number, number | boolean>;
   lesen: Record<number, number | string>;
   sprachbausteine: Record<number, number>;
   schreiben: {

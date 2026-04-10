@@ -1,12 +1,12 @@
-import type { ExamData, ExamAnswers, ScoringResult } from '../types';
+import type { ExamAnswerKey, ExamAnswers, ScoringResult } from '../types';
 
 /**
  * Telc B1 Scoring Engine
  *
  * Written Section (225 pts):
- *   - Hören:            25 Q × 5 raw = 125 raw → scaled to 75 pts (factor 0.6)
- *   - Lesen:            20 Q → scaled to 75 pts
- *   - Sprachbausteine:  20 Q → scaled to 30 pts
+ *   - Hören:            25 Q × 5 raw = 125 raw → scaled to 75 pts
+ *   - Lesen:            20 Q × 5 raw = 100 raw → scaled to 75 pts
+ *   - Sprachbausteine:  20 Q × 5 raw = 100 raw → scaled to 30 pts
  *   - Schreiben:        rubric-graded, 45 pts max
  *   Written pass: ≥ 135 pts (60%)
  *
@@ -17,50 +17,51 @@ import type { ExamData, ExamAnswers, ScoringResult } from '../types';
  * Total: 300 pts
  */
 
-export function calculateScore(exam: ExamData, answers: ExamAnswers): ScoringResult {
+export function calculateScore(key: ExamAnswerKey, answers: ExamAnswers): ScoringResult {
   // ── Hören (125 raw → 75 scaled) ──
   let hoerenRaw = 0;
-  const hoerenMaxRaw = 125; // 25 × 5
-  // Teil 1: Richtig/Falsch
-  for (const q of exam.hoeren.teil1.questions) {
-    const ans = answers.hoeren[q.id];
-    if (ans === q.correct) hoerenRaw += 5;
-  }
-  // Teil 2 + 3: Multiple choice
-  for (const q of [...exam.hoeren.teil2.questions, ...exam.hoeren.teil3.questions]) {
-    const ans = answers.hoeren[q.id];
-    if (ans === q.correct) hoerenRaw += 5;
-  }
+  const hoerenMaxRaw = 125;
+  // Teil 1: Q1-5 R/F
+  key.hoerenTeil1.forEach((correct, i) => {
+    if (answers.hoeren[i + 1] === correct) hoerenRaw += 5;
+  });
+  // Teil 2: Q6-15
+  key.hoerenTeil2.forEach((correct, i) => {
+    if (answers.hoeren[i + 6] === correct) hoerenRaw += 5;
+  });
+  // Teil 3: Q16-25
+  key.hoerenTeil3.forEach((correct, i) => {
+    if (answers.hoeren[i + 16] === correct) hoerenRaw += 5;
+  });
   const hoerenScaled = Math.round((hoerenRaw / hoerenMaxRaw) * 75);
 
-  // ── Lesen (scaled to 75 pts) ──
+  // ── Lesen (100 raw → 75 scaled) ──
   let lesenRaw = 0;
-  let lesenMaxRaw = 0;
-  // Teil 1: 5 matching questions
-  for (const q of exam.lesen.teil1.questions) {
-    lesenMaxRaw += 5;
-    if (answers.lesen[q.id] === q.correct) lesenRaw += 5;
-  }
-  // Teil 2: 5 matching questions
-  for (const s of exam.lesen.teil2.situations) {
-    lesenMaxRaw += 5;
-    if (answers.lesen[s.id] === s.correct) lesenRaw += 5;
-  }
-  // Teil 3: 10 MC questions
-  for (const q of exam.lesen.teil3.questions) {
-    lesenMaxRaw += 5;
-    if (answers.lesen[q.id] === q.correct) lesenRaw += 5;
-  }
-  const lesenScaled = lesenMaxRaw > 0 ? Math.round((lesenRaw / lesenMaxRaw) * 75) : 0;
+  const lesenMaxRaw = 100;
+  // Teil 1: Q26-30 letter match
+  key.lesenTeil1.forEach((correct, i) => {
+    if (answers.lesen[i + 26] === correct) lesenRaw += 5;
+  });
+  // Teil 2: Q31-35 letter match
+  key.lesenTeil2.forEach((correct, i) => {
+    if (answers.lesen[i + 31] === correct) lesenRaw += 5;
+  });
+  // Teil 3: Q36-45 MC
+  key.lesenTeil3.forEach((correct, i) => {
+    if (answers.lesen[i + 36] === correct) lesenRaw += 5;
+  });
+  const lesenScaled = Math.round((lesenRaw / lesenMaxRaw) * 75);
 
-  // ── Sprachbausteine (scaled to 30 pts) ──
+  // ── Sprachbausteine (100 raw → 30 scaled) ──
   let sbRaw = 0;
-  let sbMaxRaw = 0;
-  for (const q of [...exam.sprachbausteine.teil1.questions, ...exam.sprachbausteine.teil2.questions]) {
-    sbMaxRaw += 5;
-    if (answers.sprachbausteine[q.id] === q.correct) sbRaw += 5;
-  }
-  const sbScaled = sbMaxRaw > 0 ? Math.round((sbRaw / sbMaxRaw) * 30) : 0;
+  const sbMaxRaw = 100;
+  key.sprachbausteineTeil1.forEach((correct, i) => {
+    if (answers.sprachbausteine[i + 46] === correct) sbRaw += 5;
+  });
+  key.sprachbausteineTeil2.forEach((correct, i) => {
+    if (answers.sprachbausteine[i + 56] === correct) sbRaw += 5;
+  });
+  const sbScaled = Math.round((sbRaw / sbMaxRaw) * 30);
 
   // ── Schreiben (45 pts max) ──
   const schreibenScore = Math.min(
@@ -85,25 +86,16 @@ export function calculateScore(exam: ExamData, answers: ExamAnswers): ScoringRes
   );
   const oralPassed = sprechenScore >= 45;
 
-  // ── Total ──
   const totalScore = writtenTotal + sprechenScore;
   const overallPassed = writtenPassed && oralPassed;
 
-  // ── Grade ──
   let grade: string;
-  if (!overallPassed) {
-    grade = 'Nicht bestanden';
-  } else if (totalScore >= 270) {
-    grade = 'Sehr Gut';
-  } else if (totalScore >= 240) {
-    grade = 'Gut';
-  } else if (totalScore >= 210) {
-    grade = 'Befriedigend';
-  } else {
-    grade = 'Ausreichend';
-  }
+  if (!overallPassed) grade = 'Nicht bestanden';
+  else if (totalScore >= 270) grade = 'Sehr Gut';
+  else if (totalScore >= 240) grade = 'Gut';
+  else if (totalScore >= 210) grade = 'Befriedigend';
+  else grade = 'Ausreichend';
 
-  // ── Wiederholung ──
   const wiederholung: string[] = [];
   if (!writtenPassed) wiederholung.push('Schriftliche Prüfung');
   if (!oralPassed) wiederholung.push('Mündliche Prüfung');
@@ -114,16 +106,8 @@ export function calculateScore(exam: ExamData, answers: ExamAnswers): ScoringRes
     sprachbausteine: { raw: sbRaw, maxRaw: sbMaxRaw, scaled: sbScaled, maxScaled: 30 },
     schreiben: { score: schreibenScore, max: 45 },
     sprechen: { score: sprechenScore, max: 75 },
-    writtenTotal,
-    writtenMax,
-    writtenPassed,
-    oralTotal: sprechenScore,
-    oralMax: 75,
-    oralPassed,
-    totalScore,
-    totalMax: 300,
-    overallPassed,
-    grade,
-    wiederholung,
+    writtenTotal, writtenMax, writtenPassed,
+    oralTotal: sprechenScore, oralMax: 75, oralPassed,
+    totalScore, totalMax: 300, overallPassed, grade, wiederholung,
   };
 }
