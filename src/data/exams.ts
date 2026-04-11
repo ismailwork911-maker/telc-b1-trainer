@@ -23,7 +23,7 @@ export const exams: ExamAnswerKey[] = [
     sbTeil1: ['B','A','C','A','B','C','C','B','B','A'],
     sbTeil2: ['J','L','K','N','G','H','D','I','B','O'],
     hvTeil1: ['F','R','R','F','R'],
-    hvTeil2: ['R','R','R','F','F','F','R','F','F','R'],
+    hvTeil2: ['R','R','F','F','F','F','R','F','F','R'],
     hvTeil3: ['F','F','R','F','R'],
   },
   {
@@ -46,7 +46,7 @@ export const exams: ExamAnswerKey[] = [
     sbTeil2: ['G','I','B','J','F','H','M','E','A','C'],
     hvTeil1: ['R','F','R','R','F'],
     hvTeil2: ['R','F','F','F','R','F','R','R','F','R'],
-    hvTeil3: ['F','R','F','F','R'],
+    hvTeil3: ['F','R','F','F','F'],
   },
   {
     id: 4, title: 'Modelltest 4',
@@ -67,8 +67,8 @@ export const exams: ExamAnswerKey[] = [
     sbTeil1: ['A','C','B','A','C','B','A','C','B','A'],
     sbTeil2: ['O','C','M','J','P','G','E','N','L','K'],
     hvTeil1: ['F','F','R','R','F'],
-    hvTeil2: ['R','R','R','F','F','F','F','F','F','R'],
-    hvTeil3: ['F','R','R','F','F'],
+    hvTeil2: ['F','R','R','F','F','F','F','F','F','R'],
+    hvTeil3: ['F','R','F','F','F'],
   },
   {
     id: 6, title: 'Modelltest 6',
