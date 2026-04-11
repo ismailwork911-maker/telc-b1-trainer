@@ -1,7 +1,7 @@
 import type { ExamAnswerKey } from '../types';
 
 // Answer keys for Telc B1 – 15 Modelltests
-// Tests 1-3: confirmed by user. Tests 4-8: SB2+HV pending user input.
+// Tests 1-8: confirmed from official Lösungen (page 247).
 // Tests 9-15: from PDF OCR (may need verification).
 //
 // Sections & Question numbers:
@@ -17,91 +17,91 @@ import type { ExamAnswerKey } from '../types';
 export const exams: ExamAnswerKey[] = [
   {
     id: 1, title: 'Modelltest 1',
-    lvTeil1: ['B','I','A','D','F'],
-    lvTeil2: ['A','C','B','C','B'],
-    lvTeil3: ['D','J','F','I','B','O','H','A','K','G'],
-    sbTeil1: ['C','A','B','C','A','B','A','C','B','A'],
-    sbTeil2: ['J','L','K','N','G','H','D','I','B','O'],  // TODO: awaiting user data
-    hvTeil1: ['F','R','R','F','R'],                       // TODO: awaiting user data
-    hvTeil2: ['R','F','R','F','F','F','R','F','F','R'],   // TODO: awaiting user data
-    hvTeil3: ['F','F','R','F','R'],                       // TODO: awaiting user data
+    lvTeil1: ['E','A','F','G','H'],
+    lvTeil2: ['C','A','B','A','B'],
+    lvTeil3: ['D','C','A','O','O','K','I','J','O','L'],
+    sbTeil1: ['B','A','C','A','B','C','C','B','B','A'],
+    sbTeil2: ['J','L','K','N','G','H','D','I','B','O'],
+    hvTeil1: ['F','R','R','F','R'],
+    hvTeil2: ['R','R','R','F','F','F','R','F','F','R'],
+    hvTeil3: ['F','F','R','F','R'],
   },
   {
     id: 2, title: 'Modelltest 2',
-    lvTeil1: ['F','D','H','I','B'],
-    lvTeil2: ['B','A','C','A','B'],
-    lvTeil3: ['G','I','A','H','B','O','C','E','J','F'],
-    sbTeil1: ['C','B','A','C','A','C','A','B','B','A'],  // TODO: awaiting user data
-    sbTeil2: ['L','P','N','B','F','G','O','A','J','H'],  // TODO: awaiting user data
-    hvTeil1: ['R','F','F','F','F'],                       // TODO: awaiting user data
-    hvTeil2: ['F','R','F','F','R','F','R','R','F','F'],   // TODO: awaiting user data
-    hvTeil3: ['F','R','R','F','F'],                       // TODO: awaiting user data
+    lvTeil1: ['B','I','J','A','C'],
+    lvTeil2: ['A','B','C','B','C'],
+    lvTeil3: ['O','E','A','C','O','I','G','H','K','D'],
+    sbTeil1: ['C','B','A','C','A','C','A','B','B','A'],
+    sbTeil2: ['L','P','N','B','F','G','O','A','J','H'],
+    hvTeil1: ['R','F','F','F','F'],
+    hvTeil2: ['F','R','F','F','R','F','R','R','F','F'],
+    hvTeil3: ['F','R','R','F','F'],
   },
   {
     id: 3, title: 'Modelltest 3',
-    lvTeil1: ['I','D','B','A','G'],
-    lvTeil2: ['C','A','B','B','C'],
-    lvTeil3: ['H','F','A','J','B','O','D','G','I','C'],
-    sbTeil1: ['B','C','A','C','A','A','A','B','C','C'],  // TODO: awaiting user data
-    sbTeil2: ['G','I','B','J','F','H','M','E','A','C'],  // TODO: awaiting user data
-    hvTeil1: ['R','F','R','R','F'],                       // TODO: awaiting user data
-    hvTeil2: ['R','F','F','F','R','F','R','R','R','R'],   // TODO: awaiting user data
-    hvTeil3: ['R','R','F','F','F'],                       // TODO: awaiting user data
+    lvTeil1: ['I','J','D','A','C'],
+    lvTeil2: ['B','C','B','A','A'],
+    lvTeil3: ['O','A','O','D','G','H','L','I','C','E'],
+    sbTeil1: ['B','C','A','C','A','A','A','B','C','C'],
+    sbTeil2: ['G','I','B','J','F','H','M','E','A','C'],
+    hvTeil1: ['R','F','R','R','F'],
+    hvTeil2: ['R','F','F','F','R','F','R','R','F','R'],
+    hvTeil3: ['F','R','F','F','R'],
   },
   {
     id: 4, title: 'Modelltest 4',
     lvTeil1: ['C','I','B','J','H'],
     lvTeil2: ['C','B','C','A','C'],
-    lvTeil3: ['B','X','X','K','F','C','X','D','H','J'],
+    lvTeil3: ['B','O','O','K','F','C','O','D','H','J'],
     sbTeil1: ['C','B','A','C','A','C','A','C','B','B'],
     sbTeil2: ['B','I','L','H','C','D','O','J','F','P'],
     hvTeil1: ['F','F','F','R','F'],
-    hvTeil2: ['F','F','F','F','R','R','R','R','R','R'],
-    hvTeil3: ['R','R','R','R','F'],
+    hvTeil2: ['F','R','F','F','R','R','R','R','F','R'],
+    hvTeil3: ['F','R','F','F','F'],
   },
   {
     id: 5, title: 'Modelltest 5',
     lvTeil1: ['J','A','E','G','B'],
     lvTeil2: ['B','C','C','A','B'],
-    lvTeil3: ['J','H','B','X','I','E','X','F','D','K'],
+    lvTeil3: ['J','H','B','O','I','E','O','F','D','K'],
     sbTeil1: ['A','C','B','A','C','B','A','C','B','A'],
     sbTeil2: ['O','C','M','J','P','G','E','N','L','K'],
     hvTeil1: ['F','F','R','R','F'],
-    hvTeil2: ['F','R','R','F','F','F','F','F','F','R'],
-    hvTeil3: ['F','R','R','R','F'],
+    hvTeil2: ['R','R','R','F','F','F','F','F','F','R'],
+    hvTeil3: ['F','R','R','F','F'],
   },
   {
     id: 6, title: 'Modelltest 6',
     lvTeil1: ['F','G','J','B','D'],
     lvTeil2: ['C','A','A','B','B'],
-    lvTeil3: ['G','F','X','C','A','J','I','X','L','B'],
+    lvTeil3: ['G','F','O','C','A','J','I','O','L','B'],
     sbTeil1: ['C','B','B','A','A','B','A','A','C','C'],
     sbTeil2: ['B','J','M','F','P','I','H','L','C','N'],
     hvTeil1: ['R','F','R','F','R'],
-    hvTeil2: ['F','R','R','F','R','F','R','F','F','R'],
-    hvTeil3: ['R','R','F','R','F'],
+    hvTeil2: ['F','R','F','F','R','F','R','F','F','R'],
+    hvTeil3: ['R','R','F','F','F'],
   },
   {
     id: 7, title: 'Modelltest 7',
     lvTeil1: ['F','G','A','I','D'],
     lvTeil2: ['B','A','C','B','C'],
-    lvTeil3: ['D','G','X','F','X','A','H','X','I','J'],
+    lvTeil3: ['D','G','O','F','O','A','H','O','I','J'],
     sbTeil1: ['C','A','C','B','A','B','A','B','B','C'],
     sbTeil2: ['K','L','E','M','H','N','G','O','I','D'],
     hvTeil1: ['R','R','R','R','F'],
-    hvTeil2: ['R','F','R','R','R','R','F','R','F','F'],
-    hvTeil3: ['F','R','F','R','R'],
+    hvTeil2: ['R','F','F','F','R','R','F','F','F','F'],
+    hvTeil3: ['F','R','F','F','R'],
   },
   {
     id: 8, title: 'Modelltest 8',
     lvTeil1: ['F','G','D','I','H'],
     lvTeil2: ['B','B','B','C','B'],
-    lvTeil3: ['A','H','I','G','X','K','X','D','E','J'],
+    lvTeil3: ['A','H','I','G','O','K','O','D','E','J'],
     sbTeil1: ['A','A','B','C','B','C','B','A','A','C'],
     sbTeil2: ['G','I','C','H','N','F','K','O','L','P'],
     hvTeil1: ['F','F','R','R','R'],
-    hvTeil2: ['F','R','R','F','F','F','F','F','R','R'],
-    hvTeil3: ['F','R','F','R','F'],
+    hvTeil2: ['F','R','F','F','F','F','F','F','R','R'],
+    hvTeil3: ['F','R','F','F','F'],
   },
   {
     id: 9, title: 'Modelltest 9',
